@@ -1,0 +1,421 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>FAST ELA 6 Flashcards</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: one centered play column; mode tabs on top, topic chips, then the active game board. Locksmith palette: navy + brass gold + rainbow "page" accents. */
+:root{
+  --bg:#eef2fb; --surface:#ffffff; --surface-2:#e3e9f7; --ink:#14224a; --muted:#56628a;
+  --navy:#1b2d6b; --gold:#e0a312; --gold-soft:#fff3d1; --line:#cdd6ee;
+  --good:#1f9d61; --good-soft:#dcf5e8; --bad:#d6453d; --bad-soft:#fde3e1;
+  --r1:#e5484d; --r2:#f08c00; --r3:#e0a312; --r4:#2f9e44; --r5:#1c7ed6; --r6:#7048e8;
+  --card-front:#1b2d6b; --card-front-ink:#ffffff;
+  --display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1430; --surface:#17214a; --surface-2:#202c5c; --ink:#eef1ff; --muted:#a8b2d8;
+  --navy:#9fb4ff; --gold:#f5bd3a; --gold-soft:#3a2f12; --line:#2c3a72;
+  --good:#4ad48f; --good-soft:#123a28; --bad:#ff7a72; --bad-soft:#47201e;
+  --card-front:#24357d; --card-front-ink:#ffffff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1430; --surface:#17214a; --surface-2:#202c5c; --ink:#eef1ff; --muted:#a8b2d8;
+  --navy:#9fb4ff; --gold:#f5bd3a; --gold-soft:#3a2f12; --line:#2c3a72;
+  --good:#4ad48f; --good-soft:#123a28; --bad:#ff7a72; --bad-soft:#47201e;
+  --card-front:#24357d; --card-front-ink:#ffffff; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* header */
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{height:86px;width:auto;flex:none}
+.titles{min-width:0;flex:1}
+.eyebrow{font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--muted)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,44px);line-height:1;margin:2px 0 0;color:var(--navy);text-wrap:balance}
+.rainbow{display:flex;height:6px;border-radius:3px;overflow:hidden}
+.rainbow i{flex:1}
+.rainbow i:nth-child(1){background:var(--r1)}.rainbow i:nth-child(2){background:var(--r2)}.rainbow i:nth-child(3){background:var(--r3)}
+.rainbow i:nth-child(4){background:var(--r4)}.rainbow i:nth-child(5){background:var(--r5)}.rainbow i:nth-child(6){background:var(--r6)}
+
+/* key ring progress */
+.keyring{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;flex-wrap:wrap}
+.keyring b{font-family:var(--display);font-size:22px;color:var(--navy);font-variant-numeric:tabular-nums}
+.bar{flex:1;min-width:140px;height:12px;background:var(--surface-2);border-radius:6px;overflow:hidden}
+.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--r2));width:0;transition:width .4s}
+.small{font-size:14px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:14px;padding:4px}
+
+/* mode tabs */
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tab{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:10px 8px;text-align:center}
+.tab strong{display:block;font-family:var(--display);font-size:20px;line-height:1.1}
+.tab small{color:var(--muted);font-size:13px}
+.tab[aria-selected="true"]{border-color:var(--gold);background:var(--gold-soft)}
+
+/* topic chips */
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:700}
+.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:var(--bg)}
+.chip .n{opacity:.7;font-weight:600;margin-left:4px}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+.pill{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.04em;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;font-size:16px;background:var(--surface-2);color:var(--ink);min-height:48px}
+.btn.primary{background:var(--navy);color:var(--bg)}
+.btn.good{background:var(--good);color:#fff}
+.btn.bad{background:var(--bad);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* flip card */
+.stage{perspective:1400px}
+.flip{position:relative;width:100%;min-height:290px;border:0;padding:0;background:none;cursor:pointer;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.7,.2,1);display:grid}
+.flip.on{transform:rotateY(180deg)}
+.face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:28px 26px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:12px;min-height:290px}
+.front{background:var(--card-front);color:var(--card-front-ink);box-shadow:0 10px 26px rgba(20,34,74,.22)}
+.front .q{font-family:var(--display);font-weight:700;font-size:clamp(24px,4.6vw,34px);line-height:1.15;text-wrap:balance}
+.front .hint{font-size:14px;opacity:.75}
+.front .std{position:absolute;top:14px;left:16px;font-size:12px;font-weight:800;letter-spacing:.06em;color:#ffd770}
+.back{background:var(--surface);border:3px solid var(--gold);transform:rotateY(180deg);color:var(--ink)}
+.back .a{font-size:clamp(18px,3.2vw,22px);font-weight:700;max-width:56ch;text-wrap:pretty}
+.back .ex{font-size:15px;color:var(--muted);max-width:56ch}
+.back .ex em{font-style:normal;font-weight:800;color:var(--navy)}
+.spk{border:0;border-radius:999px;min-height:44px;padding:8px 16px;font-weight:800;font-size:15px;display:inline-flex;align-items:center;gap:6px;background:var(--gold);color:#14224a}
+.spk svg{width:20px;height:20px}
+.spk.playing{box-shadow:0 0 0 4px var(--gold-soft)}
+.mini{flex:none;margin-left:auto;border:0;background:var(--surface-2);color:var(--ink);border-radius:50%;width:38px;height:38px;display:grid;place-items:center}
+.mini svg{width:18px;height:18px}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.toggle input{width:22px;height:22px;accent-color:var(--gold)}
+.keyhole{width:22px;height:30px;flex:none}
+@media (prefers-reduced-motion:reduce){.flip{transition:none}}
+
+/* quiz */
+.qcard{background:var(--card-front);color:var(--card-front-ink);border-radius:18px;padding:22px;text-align:center}
+.qcard .q{font-family:var(--display);font-size:clamp(22px,4.2vw,30px);font-weight:700;line-height:1.15;text-wrap:balance}
+.choices{display:grid;gap:10px}
+.choice{text-align:left;border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:14px 16px;font-size:16px;font-weight:600;display:flex;gap:12px;align-items:flex-start;min-height:56px}
+.choice .ltr{flex:none;width:30px;height:30px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-weight:800}
+.choice.right{border-color:var(--good);background:var(--good-soft)}
+.choice.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.stat{font-family:var(--display);font-size:22px;color:var(--navy);font-variant-numeric:tabular-nums}
+.stat small{font-family:var(--body);font-size:12px;color:var(--muted);display:block;line-height:1;text-transform:uppercase;letter-spacing:.06em;font-weight:800}
+.feedback{font-weight:700;padding:10px 14px;border-radius:12px}
+.feedback.ok{background:var(--good-soft);color:var(--good)}
+.feedback.no{background:var(--bad-soft);color:var(--bad)}
+
+/* match */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:620px){.grid{grid-template-columns:repeat(2,1fr)}}
+.tile{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:12px;min-height:96px;font-size:14px;font-weight:700;line-height:1.3;display:flex;align-items:center;justify-content:center;text-align:center;transition:transform .15s,opacity .3s}
+.tile.term{background:var(--card-front);color:var(--card-front-ink);border-color:var(--card-front);font-family:var(--display);font-size:18px}
+.tile.sel{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold);transform:scale(1.03)}
+.tile.miss{animation:shake .35s}
+.tile.done{opacity:0;pointer-events:none}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.done-box{text-align:center;padding:18px 8px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.done-box h2{font-family:var(--display);font-size:34px;margin:0;color:var(--navy)}
+.saved{font-size:13px;color:var(--good);font-weight:800;min-height:18px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+</style>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="wrap">
+  <header>
+    <img class="logo" id="logo" alt="The Literacy Locksmith" hidden>
+    <div class="titles">
+      <div class="eyebrow">Grade 6 · Florida B.E.S.T. ELA · FAST Review</div>
+      <h1>Key Terms Flashcards</h1>
+    </div>
+  </header>
+  <div class="rainbow" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+  <div class="keyring" aria-live="polite">
+    <svg class="keyhole" viewBox="0 0 22 30" aria-hidden="true"><circle cx="11" cy="9" r="8" fill="var(--gold)"/><path d="M6 14h10l3 15H3z" fill="var(--gold)"/></svg>
+    <b id="mastered">0 / 0</b><span class="small">cards unlocked</span>
+    <div class="bar"><span id="barfill"></span></div>
+    <span class="saved" id="saved"></span>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-study" data-mode="study"><strong>Study</strong><small>Flip &amp; self-check</small></button>
+    <button class="tab" role="tab" id="tab-quiz" data-mode="quiz"><strong>Quiz</strong><small>Pick the answer</small></button>
+    <button class="tab" role="tab" id="tab-match" data-mode="match"><strong>Match</strong><small>Beat the clock</small></button>
+  </div>
+
+  <div class="chips" id="chips" aria-label="Choose a topic"></div>
+
+  <section class="panel" id="board"></section>
+
+  <div class="row small"><span>Your progress saves on this iPad automatically.</span><span class="spacer"></span><button class="linkbtn" id="resetBtn">Start over</button></div>
+  <div class="panel" id="resetConfirm" hidden>
+    <strong>Erase all progress on this device?</strong>
+    <div class="row"><button class="btn bad" id="resetYes">Yes, start over</button><button class="btn" id="resetNo">Keep my progress</button></div>
+  </div>
+</div>
+
+<script>
+/* ---------- DECK (written for B.E.S.T. ELA Grade 6) ---------- */
+const TOPICS = {
+  lit:{name:"Plot & Characters", std:"ELA.6.R.1.1"},
+  theme:{name:"Theme", std:"ELA.6.R.1.2"},
+  pov:{name:"Point of View", std:"ELA.6.R.1.3"},
+  poetry:{name:"Poetry", std:"ELA.6.R.1.4"},
+  struct:{name:"Text Structure", std:"ELA.6.R.2.1"},
+  central:{name:"Central Idea", std:"ELA.6.R.2.2"},
+  purpose:{name:"Author's Purpose", std:"ELA.6.R.2.3"},
+  arg:{name:"Argument", std:"ELA.6.R.2.4"},
+  fig:{name:"Figurative Language", std:"ELA.6.R.3.1"},
+  summ:{name:"Summarize", std:"ELA.6.R.3.2"},
+  compare:{name:"Compare Texts", std:"ELA.6.R.3.3"},
+  rhet:{name:"Rhetoric", std:"ELA.6.R.3.4"},
+  vocab:{name:"Word Parts", std:"ELA.6.V.1.2"},
+  context:{name:"Context Clues", std:"ELA.6.V.1.3"}
+};
+const CARDS = [
+ ["lit","Plot","The sequence of events in a story: exposition, rising action, climax, falling action, resolution.","The climax is the turning point where the conflict is at its peak."],
+ ["lit","Conflict","The problem or struggle that drives the plot.","Character vs. character, self, nature, or society."],
+ ["lit","Character interaction","When characters meet, talk, or clash, and it causes something new to happen in the plot.","Maya's argument with her brother makes her run away, which starts the adventure."],
+ ["lit","Turning point","A moment that changes the direction of the conflict or what a character does next.","After losing the race, Theo decides to train instead of quit."],
+ ["lit","Character trait vs. motivation","A trait is what a character is like; motivation is why a character acts.","Trait: stubborn. Motivation: wants to prove her coach wrong."],
+ ["theme","Theme","The author's message about life, written as a complete sentence.","Not \"friendship\" but \"True friends stand by you when it is hard.\""],
+ ["theme","Topic vs. theme","A topic is one or two words (courage); a theme is a full statement about that topic.","Topic: honesty. Theme: Telling the truth builds trust."],
+ ["theme","Implied theme","A message the reader must infer from what characters do, learn, and experience.","Look at how the main character changes from beginning to end."],
+ ["theme","Developing a theme","Trace how events and choices build the message across the beginning, middle, and end.","Ask: What does the character learn, and what shows it?"],
+ ["pov","Point of view","Who is telling the story: first person (I), second person (you), or third person (he, she, they).","\"I opened the door\" is first person."],
+ ["pov","Third person limited","The narrator is outside the story but shares only one character's thoughts.","Readers know what Ava thinks, but not what anyone else thinks."],
+ ["pov","Third person omniscient","The narrator knows and shares every character's thoughts and feelings.","\"Ava was nervous, and Leo secretly felt the same.\""],
+ ["pov","Perspective","A character's or narrator's attitude and beliefs, shaped by experience.","A city kid and a farm kid may see the same storm differently."],
+ ["pov","Dramatic irony","The reader knows something a character does not.","We know the surprise party is waiting; the character thinks everyone forgot."],
+ ["poetry","Stanza","A group of lines in a poem, like a paragraph in prose.","A quatrain is a 4-line stanza."],
+ ["poetry","Rhyme scheme","The pattern of end rhymes in a poem, labeled with letters.","ABAB means lines 1 and 3 rhyme, and lines 2 and 4 rhyme."],
+ ["poetry","Free verse","Poetry with no set rhyme or rhythm pattern.","Line breaks and word choice create the effect instead of rhyme."],
+ ["poetry","Sonnet","A 14-line poem with a set rhyme scheme, often with a turn (volta) where the idea shifts.","Shakespearean sonnets end with a rhyming couplet."],
+ ["poetry","Haiku","A short 3-line poem with a 5-7-5 syllable pattern, often about nature.","Its brief form makes every word count."],
+ ["poetry","Refrain","A line or phrase that repeats in a poem or song.","Repetition emphasizes a key idea or feeling."],
+ ["struct","Text structure","How an author organizes information in a text.","Sequence, compare-contrast, cause-effect, problem-solution, description."],
+ ["struct","Cause and effect","A structure that explains why something happened and what happened as a result.","Signal words: because, so, as a result, therefore."],
+ ["struct","Problem and solution","A structure that describes a problem and one or more ways to fix it.","Signal words: problem, issue, solved, one answer is."],
+ ["struct","Text features","Parts of a text that help readers find or understand information.","Headings, captions, bold words, charts, maps, sidebars."],
+ ["central","Central idea","The most important point the author makes about the topic.","State it as a complete sentence, not a word."],
+ ["central","Supporting details","Facts, examples, quotes, and definitions that explain or prove the central idea.","If you remove a key detail, the central idea loses support."],
+ ["central","Implied central idea","A main point the author does not state directly; you combine details to figure it out.","Ask: What do all of these details have in common?"],
+ ["purpose","Author's purpose","The reason an author writes: to inform, persuade, or entertain.","A brochure asking you to recycle is written to persuade."],
+ ["purpose","Author's perspective","The author's attitude or point of view about the subject.","Word choice like \"wasteful\" or \"smart\" reveals perspective."],
+ ["purpose","Bias","When an author favors one side and leaves out or downplays the other.","Look for loaded words and missing viewpoints."],
+ ["arg","Claim","The author's main position or argument.","\"Schools should start later in the morning.\""],
+ ["arg","Evidence","Facts, statistics, examples, or expert quotes that support a claim.","\"Studies show teens need 9 hours of sleep.\""],
+ ["arg","Reasoning","The explanation of how the evidence proves the claim.","\"So a later start would help students be more alert.\""],
+ ["arg","Counterclaim","An opposing argument the author addresses and responds to.","\"Some say buses would cost more, but...\""],
+ ["arg","Relevant vs. sufficient evidence","Relevant evidence connects to the claim; sufficient evidence means there is enough of it.","One friend's opinion is not sufficient to prove a claim."],
+ ["fig","Simile","A comparison of two unlike things using \"like\" or \"as.\"","\"Her voice was as soft as a feather.\""],
+ ["fig","Metaphor","A comparison of two unlike things that says one IS the other.","\"The classroom was a zoo.\""],
+ ["fig","Personification","Giving human qualities to something that is not human.","\"The wind whispered through the trees.\""],
+ ["fig","Hyperbole","An extreme exaggeration for emphasis or humor.","\"I've told you a million times!\""],
+ ["fig","Idiom","A common expression whose meaning is different from its literal words.","\"It's raining cats and dogs\" means it is raining hard."],
+ ["fig","Alliteration","Repeating the same beginning consonant sound in nearby words.","\"Seven slippery snakes slid south.\""],
+ ["summ","Summary","A short retelling of the most important ideas in your own words, without opinions.","Include the central idea and key details only."],
+ ["summ","Paraphrase","Restating a specific passage in your own words, keeping the same meaning.","It is about the same length as the original, unlike a summary."],
+ ["compare","Compare and contrast texts","Tell how two texts are alike and different in topic, theme, purpose, or perspective.","Use evidence from both texts to support each point."],
+ ["compare","Synthesis","Combining ideas from two or more texts to form a new, bigger understanding.","A poem and an article together show how hurricanes affect families."],
+ ["rhet","Ethos","An appeal to credibility or trust in the speaker.","\"As a doctor for 20 years, I recommend...\""],
+ ["rhet","Pathos","An appeal to the audience's emotions.","\"Imagine a puppy alone in the cold.\""],
+ ["rhet","Logos","An appeal to logic using facts, data, and reasons.","\"80% of students improved after the change.\""],
+ ["rhet","Rhetorical question","A question asked for effect, not to get an answer.","\"Who wouldn't want a longer summer?\""],
+ ["vocab","Root","The main part of a word that carries its core meaning.","\"Spect\" means to look: inspect, spectator."],
+ ["vocab","Prefix","A word part added to the beginning of a root that changes its meaning.","\"Un-\" means not: unhappy."],
+ ["vocab","Suffix","A word part added to the end of a word that changes its meaning or part of speech.","\"-less\" means without: fearless."],
+ ["vocab","Greek and Latin roots","Ancient word parts that help unlock meanings of many English words.","bio = life, graph = write, so biography = writing about a life."],
+ ["context","Context clues","Hints in nearby words or sentences that help you figure out an unknown word.","Look for definitions, examples, synonyms, and antonyms."],
+ ["context","Denotation","The dictionary meaning of a word.","\"Home\" denotes a place where someone lives."],
+ ["context","Connotation","The feelings or ideas a word suggests beyond its dictionary meaning.","\"Cheap\" feels negative; \"affordable\" feels positive."],
+ ["context","Antonym clue","A context clue that shows an unknown word means the opposite of a known word.","\"Unlike his timid sister, Jay was audacious.\" (bold)"]
+].map((c,i)=>({id:i,topic:c[0],front:c[1],back:c[2],ex:c[3]}));
+
+/* ---------- SAVE (device storage) ---------- */
+const KEY="rees-fast6-flashcards-v1";
+let S={mode:"study",topic:"all",mastered:{},learning:{},studyPos:0,studyQueue:null,quizBest:0,matchBest:null};
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
+let saveTimer;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));const el=document.getElementById("saved");el.textContent="✓ Saved";clearTimeout(saveTimer);saveTimer=setTimeout(()=>el.textContent="",1500);}catch(e){}}
+
+/* ---------- audio (Kokoro "Heart" voice) ---------- */
+const SPK='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>';
+const player=new Audio();let queue=[],playingBtn=null;
+function stopAudio(){queue=[];player.pause();if(playingBtn)playingBtn.classList.remove("playing");playingBtn=null;}
+function play(names,btn){stopAudio();queue=names.slice();playingBtn=btn||null;if(btn)btn.classList.add("playing");next();}
+function next(){if(!queue.length){if(playingBtn)playingBtn.classList.remove("playing");playingBtn=null;return;}player.src="audio/"+queue.shift()+".mp3";player.play().catch(()=>{});}
+player.addEventListener("ended",next);
+document.addEventListener("click",e=>{const b=e.target.closest("[data-say]");if(!b)return;e.stopPropagation();play(b.dataset.say.split(","),b);},true);
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const deck=()=>S.topic==="all"?CARDS:CARDS.filter(c=>c.topic===S.topic);
+
+function renderProgress(){
+  const d=deck();const m=d.filter(c=>S.mastered[c.id]).length;
+  $("#mastered").textContent=`${m} / ${d.length}`;
+  $("#barfill").style.width=(d.length?m/d.length*100:0)+"%";
+}
+function renderChips(){
+  const all=[["all","All topics",CARDS.length]].concat(Object.entries(TOPICS).map(([k,t])=>[k,t.name,CARDS.filter(c=>c.topic===k).length]));
+  $("#chips").innerHTML=all.map(([k,n,c])=>`<button class="chip" data-t="${k}" aria-pressed="${S.topic===k}">${n}<span class="n">${c}</span></button>`).join("");
+}
+$("#chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;S.topic=b.dataset.t;S.studyQueue=null;S.studyPos=0;save();renderChips();renderProgress();render();});
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{S.mode=t.dataset.mode;save();render();}));
+
+function render(){
+  stopAudio();
+  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.mode===S.mode));
+  stopMatchTimer();
+  if(S.mode==="study")renderStudy();else if(S.mode==="quiz")startQuiz();else startMatch();
+}
+
+/* ---------- STUDY ---------- */
+function renderStudy(){
+  const d=deck();
+  if(!S.studyQueue||!S.studyQueue.every(id=>CARDS[id]&&d.includes(CARDS[id]))){
+    S.studyQueue=d.filter(c=>!S.mastered[c.id]).map(c=>c.id);S.studyPos=0;save();
+  }
+  if(S.studyQueue.length===0||S.studyPos>=S.studyQueue.length){return studyDone();}
+  const c=CARDS[S.studyQueue[S.studyPos]];const t=TOPICS[c.topic];
+  $("#board").innerHTML=`
+    <div class="row"><span class="pill">${t.name}</span><span class="spacer"></span><span class="small">Card ${S.studyPos+1} of ${S.studyQueue.length} left</span></div>
+    <div class="stage"><div class="flip" id="flip" role="button" tabindex="0" aria-label="Flip card">
+      <div class="face front"><span class="std">${t.std}</span><div class="q">${esc(c.front)}</div><button class="spk" data-say="f${c.id}">${SPK}Listen</button><div class="hint">Tap the card to flip</div></div>
+      <div class="face back"><div class="a">${esc(c.back)}</div><div class="ex"><em>Example:</em> ${esc(c.ex)}</div><button class="spk" data-say="b${c.id},e${c.id}">${SPK}Listen</button></div>
+    </div></div>
+    <div class="row" id="judge" style="justify-content:center">
+      <button class="btn bad" id="learn" disabled>Still learning</button>
+      <button class="btn good" id="got" disabled>Got it!</button>
+    </div>
+    <div class="row"><button class="btn" id="shuf">Shuffle</button><label class="toggle"><input type="checkbox" id="auto" ${S.autoRead?"checked":""}>Read cards aloud automatically</label><span class="spacer"></span><span class="small">Flip first, then decide. "Still learning" cards come back later.</span></div>`;
+  const flip=$("#flip");
+  const doFlip=()=>{flip.classList.toggle("on");$("#learn").disabled=$("#got").disabled=false;if(S.autoRead)play(flip.classList.contains("on")?[`b${c.id}`,`e${c.id}`]:[`f${c.id}`]);else stopAudio();};
+  flip.onclick=e=>{if(e.target.closest(".spk"))return;doFlip();};
+  flip.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();doFlip();}};
+  $("#auto").onchange=e=>{S.autoRead=e.target.checked;save();if(S.autoRead)play([`f${c.id}`]);};
+  if(S.autoRead)play([`f${c.id}`]);
+  $("#got").onclick=()=>{S.mastered[c.id]=1;delete S.learning[c.id];S.studyQueue.splice(S.studyPos,1);save();renderProgress();renderStudy();};
+  $("#learn").onclick=()=>{S.learning[c.id]=1;const id=S.studyQueue.splice(S.studyPos,1)[0];const at=Math.min(S.studyQueue.length,S.studyPos+3);S.studyQueue.splice(at,0,id);save();renderStudy();};
+  $("#shuf").onclick=()=>{S.studyQueue=shuffle(S.studyQueue);S.studyPos=0;save();renderStudy();};
+}
+function studyDone(){
+  $("#board").innerHTML=`<div class="done-box"><h2>Every card unlocked!</h2>
+    <p>You marked all ${deck().length} cards in this set as "Got it." Try the Quiz to prove it.</p>
+    <div class="row" style="justify-content:center"><button class="btn primary" id="goQuiz">Take the Quiz</button><button class="btn" id="again">Study this set again</button></div></div>`;
+  confetti();
+  $("#goQuiz").onclick=()=>{S.mode="quiz";save();render();};
+  $("#again").onclick=()=>{deck().forEach(c=>delete S.mastered[c.id]);S.studyQueue=null;save();renderProgress();renderStudy();};
+}
+
+/* ---------- QUIZ ---------- */
+let Q;
+function startQuiz(){
+  const d=deck();const pool=shuffle(d).slice(0,Math.min(10,d.length));
+  Q={items:pool,i:0,score:0,streak:0,best:0,answered:false,missed:[]};quizCard();
+}
+function quizCard(){
+  if(Q.i>=Q.items.length)return quizDone();
+  const c=Q.items[Q.i];
+  const others=shuffle(CARDS.filter(x=>x.id!==c.id&&x.topic===c.topic)).concat(shuffle(CARDS.filter(x=>x.topic!==c.topic)));
+  const opts=shuffle([c].concat(others.slice(0,3)));
+  $("#board").innerHTML=`
+    <div class="row"><div class="stat"><small>Question</small>${Q.i+1}/${Q.items.length}</div><div class="stat"><small>Score</small>${Q.score}</div><div class="stat"><small>Streak</small>${Q.streak}${Q.streak>=3?" 🔥":""}</div><span class="spacer"></span><span class="pill">${TOPICS[c.topic].name}</span></div>
+    <div class="qcard"><div class="small" style="color:#ffd770;font-weight:800">Which definition matches?</div><div class="q">${esc(c.front)}</div><div style="margin-top:10px"><button class="spk" data-say="f${c.id}">${SPK}Listen</button></div></div>
+    <div class="choices">${opts.map((o,k)=>`<div class="choice" role="button" tabindex="0" data-id="${o.id}"><span class="ltr">${"ABCD"[k]}</span><span>${esc(o.back)}</span><button class="mini" data-say="b${o.id}" aria-label="Listen to choice ${"ABCD"[k]}">${SPK}</button></div>`).join("")}</div>
+    <div id="fb"></div>`;
+  document.querySelectorAll(".choice").forEach(b=>b.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();b.click();}});
+  if(S.autoRead)play([`f${c.id}`]);
+  document.querySelectorAll(".choice").forEach(b=>b.onclick=e=>{if(e.target.closest(".mini"))return;
+    if(Q.answered)return;Q.answered=true;
+    const ok=+b.dataset.id===c.id;
+    document.querySelectorAll(".choice").forEach(x=>{if(+x.dataset.id===c.id)x.classList.add("right");});
+    if(ok){Q.streak++;Q.score+=10+Math.min(Q.streak-1,5)*2;Q.best=Math.max(Q.best,Q.streak);S.mastered[c.id]=1;}
+    else{b.classList.add("wrong");Q.streak=0;Q.missed.push(c);delete S.mastered[c.id];S.learning[c.id]=1;}
+    save();renderProgress();
+    $("#fb").innerHTML=`<div class="feedback ${ok?"ok":"no"}">${ok?"Correct! +"+(10+Math.min(Q.streak-1,5)*2):"Not quite. Example: "+esc(c.ex)}</div>
+      <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn primary" id="nx">${Q.i+1<Q.items.length?"Next question":"See results"}</button></div>`;
+    $("#nx").onclick=()=>{Q.i++;Q.answered=false;quizCard();};$("#nx").focus();
+  });
+}
+function quizDone(){
+  const right=Q.items.length-Q.missed.length;const newBest=Q.score>(S.quizBest||0);
+  if(newBest){S.quizBest=Q.score;save();}
+  $("#board").innerHTML=`<div class="done-box"><h2>${right}/${Q.items.length} correct</h2>
+    <div class="row" style="justify-content:center;gap:28px"><div class="stat"><small>Score</small>${Q.score}</div><div class="stat"><small>Best streak</small>${Q.best}</div><div class="stat"><small>High score</small>${S.quizBest}</div></div>
+    ${newBest?'<p><strong>New high score!</strong></p>':""}
+    ${Q.missed.length?`<p class="small">Review these: ${Q.missed.map(m=>esc(m.front)).join(" · ")}</p>`:"<p>Perfect round!</p>"}
+    <div class="row" style="justify-content:center"><button class="btn primary" id="qa">Play again</button>${Q.missed.length?'<button class="btn" id="st">Study missed cards</button>':""}</div></div>`;
+  if(right>=Math.ceil(Q.items.length*.8))confetti();
+  $("#qa").onclick=startQuiz;
+  const st=$("#st");if(st)st.onclick=()=>{S.mode="study";S.studyQueue=Q.missed.map(m=>m.id).filter(id=>deck().some(c=>c.id===id));S.studyPos=0;save();render();};
+}
+
+/* ---------- MATCH ---------- */
+let M,mTimer;
+function stopMatchTimer(){clearInterval(mTimer);}
+function startMatch(){
+  const pick=shuffle(deck()).slice(0,6);
+  const tiles=shuffle(pick.flatMap(c=>[{id:c.id,kind:"term",text:c.front},{id:c.id,kind:"def",text:c.back}]));
+  M={tiles,sel:null,left:pick.length,start:null,misses:0,elapsed:0};
+  $("#board").innerHTML=`
+    <div class="row"><div class="stat"><small>Time</small><span id="clock">0.0</span>s</div><div class="stat"><small>Pairs left</small><span id="left">${M.left}</span></div><div class="stat"><small>Best</small>${S.matchBest?S.matchBest.toFixed(1)+"s":"—"}</div><span class="spacer"></span><button class="btn" id="newm">New board</button></div>
+    <p class="small" style="margin:0">Tap a term, then tap its definition. The clock starts on your first tap. Each miss adds 2 seconds.</p>
+    <div class="grid">${M.tiles.map((t,k)=>`<button class="tile ${t.kind==="term"?"term":""}" data-k="${k}">${esc(t.text)}</button>`).join("")}</div>`;
+  $("#newm").onclick=()=>{stopMatchTimer();startMatch();};
+  document.querySelectorAll(".tile").forEach(b=>b.onclick=()=>matchTap(b));
+}
+function matchTap(b){
+  if(!M.start){M.start=performance.now();mTimer=setInterval(()=>{const el=$("#clock");if(el)el.textContent=((performance.now()-M.start)/1000+M.misses*2).toFixed(1);},100);}
+  const t=M.tiles[b.dataset.k];
+  if(S.autoRead)play([(t.kind==="term"?"f":"b")+t.id]);
+  if(!M.sel){M.sel=b;b.classList.add("sel");return;}
+  if(M.sel===b){b.classList.remove("sel");M.sel=null;return;}
+  const a=M.sel,ta=M.tiles[a.dataset.k];
+  if(ta.id===t.id&&ta.kind!==t.kind){
+    a.classList.remove("sel");a.classList.add("done");b.classList.add("done");M.left--;$("#left").textContent=M.left;
+    S.mastered[t.id]=1;save();renderProgress();
+    if(M.left===0)matchDone();
+  }else{
+    M.misses++;[a,b].forEach(x=>{x.classList.remove("sel");x.classList.add("miss");setTimeout(()=>x.classList.remove("miss"),400);});
+  }
+  M.sel=null;
+}
+function matchDone(){
+  stopMatchTimer();const time=(performance.now()-M.start)/1000+M.misses*2;
+  const newBest=!S.matchBest||time<S.matchBest;if(newBest){S.matchBest=time;save();}
+  $("#board").innerHTML=`<div class="done-box"><h2>${time.toFixed(1)} seconds</h2>
+    <p>${M.misses} miss${M.misses===1?"":"es"} · Best time: ${S.matchBest.toFixed(1)}s</p>${newBest?"<p><strong>New record!</strong></p>":""}
+    <button class="btn primary" id="ma">Play again</button></div>`;
+  confetti();$("#ma").onclick=startMatch;
+}
+
+/* ---------- reset ---------- */
+$("#resetBtn").onclick=()=>{$("#resetConfirm").hidden=false;};
+$("#resetNo").onclick=()=>{$("#resetConfirm").hidden=true;};
+$("#resetYes").onclick=()=>{S.mastered={};S.learning={};S.studyQueue=null;S.studyPos=0;S.quizBest=0;S.matchBest=null;save();$("#resetConfirm").hidden=true;renderProgress();render();};
+
+/* ---------- confetti ---------- */
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const cv=$("#confetti"),ctx=cv.getContext("2d");cv.width=innerWidth;cv.height=innerHeight;
+  const cols=["#e5484d","#f08c00","#e0a312","#2f9e44","#1c7ed6","#7048e8"];
+  const P=Array.from({length:160},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.5,w:6+Math.random()*6,h:8+Math.random()*8,c:cols[Math.random()*6|0],vy:2+Math.random()*3,vx:-1.5+Math.random()*3,r:Math.random()*6,vr:-.2+Math.random()*.4}));
+  let f=0;(function tick(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});if(++f<200)requestAnimationFrame(tick);else ctx.clearRect(0,0,cv.width,cv.height);})();
+}
+
+renderChips();renderProgress();render();
+</script>
+
+</body></html>
